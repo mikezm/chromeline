@@ -1,5 +1,5 @@
 """Cast a Pi line in to a Chromecast."""
-import ConfigParser
+import configparser
 import os
 import signal
 import subprocess
@@ -33,7 +33,7 @@ def cast_stream(chromecast, stream_source_ip, mount='chromeline.ogg'):
 
 def load_config():
     """Load the configuration file."""
-    config = ConfigParser.ConfigParser()
+    config = configparser.ConfigParser()
     config.read('config.ini')
     return dict(config.items('chromeline'))
 
@@ -52,18 +52,18 @@ def chromeline(chromecast_uuid, stream_source_ip, line_in_device, icecast_passwo
     """Connect it all up."""
     chromecast = None
     while chromecast is None:
-        print 'Searching for Chromecast...'
+        print('Searching for Chromecast...')
         time.sleep(5)
         chromecast = get_chromecast(chromecast_uuid)
 
-    print 'Mounting internal stream in Icecast...'
+    print('Mounting internal stream in Icecast...')
     process = enable_stream(line_in_device, icecast_password)
     time.sleep(5)
 
-    print 'Casting external stream to Chromecast...'
+    print('Casting external stream to Chromecast...')
     cast_stream(chromecast, stream_source_ip)
 
-    print 'Running...'
+    print('Running...')
     return chromecast, process
 
 
@@ -80,13 +80,13 @@ def main():
             time.sleep(5)
 
             if not chromecast_still_connected(chromecast):
-                print 'Stopping internal stream due to Chromecast disconnect!'
+                print('Stopping internal stream due to Chromecast disconnect!')
                 os.killpg(os.getpgid(process.pid), signal.SIGTERM)
                 process.kill()
                 break
 
             if process.poll() is not None:
-                print 'Restarting due to internal stream failing!'
+                print('Restarting due to internal stream failing!')
                 break
 
         time.sleep(5)
